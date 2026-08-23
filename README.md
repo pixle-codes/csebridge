@@ -117,6 +117,30 @@ python -m csebridge "query" --site python.org         # site-restricted
 Exit codes: `0` ok · `1` backend/network failure (CSE-shaped error via
 `--json`) · `2` usage error.
 
+### Audit a repo: `csebridge scan`
+
+Google stops serving the Custom Search JSON API on **Jan 1, 2027**. Point
+`scan` at any file or directory and it lists every call site that will break —
+raw `googleapis.com/customsearch/v1` URLs, `googleapiclient` clients,
+`customsearch` usage from the `googleapis` npm package, `<gcse:*>` widget
+embeds, and `GOOGLE_CSE_*` / `CUSTOMSEARCH_*` env vars — each with a concrete
+migration checklist pointing at the csebridge swap:
+
+```bash
+python -m csebridge scan ./myproject          # findings + checklist per site
+python -m csebridge scan ./myproject --json   # machine-readable report
+python -m csebridge scan src/search.py        # single file works too
+```
+
+Text mode groups findings as `[rule] path:line`, shows the matched line, then
+the fix. JSON mode emits `{target, cutoff, files_scanned, findings[], summary}`
+where each finding carries `rule`, `path`, `line`, `match` (trimmed) and its
+own `checklist`. Exit codes: `0` clean (nothing to migrate) · `1` findings ·
+`2` usage error. Vendored/VCS directories (`node_modules`, `.git`,
+`__pycache__`, virtualenvs, …) and binary files are skipped; every text file
+type is scanned, including READMEs and configs — docs that teach the dying API
+break too.
+
 ## What's compatible today
 
 - Response envelope: `kind`, `url.template`, `context`, `queries.request`

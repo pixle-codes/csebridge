@@ -7,10 +7,17 @@ import sys
 from . import api
 from .backends import BACKENDS
 from .errors import CseError
+from .scan import format_report, scan_path
 
 EXIT_OK = 0
 EXIT_BACKEND_ERROR = 1
 EXIT_USAGE = 2
+EXIT_FINDINGS = 1
+
+SCAN_HELP = (
+    "scan a file or directory for Google Custom Search API usage "
+    "(dies Jan 1 2027) and print a migration checklist per call site"
+)
 
 
 def build_parser():
@@ -41,12 +48,14 @@ def build_parser():
         help="i=include site only, e=exclude site",
     )
     parser.add_argument("--json", action="store_true", help="print the full CSE JSON payload")
-    parser.add_argument("--version", action="version", version="%(prog)s 0.2.0")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.3.0")
     return parser
 
 
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "scan":
+        scan_main(argv[1:])
     parser = build_parser()
     try:
         args = parser.parse_args(argv)
@@ -103,6 +112,42 @@ def hint_for(backend):
     if impl and impl.env_var:
         return f"{backend} needs ${impl.env_var}: {impl.setup_hint}"
     return "set the API key env var for your chosen backend"
+
+
+def build_scan_parser():
+    parser = argparse.ArgumentParser(
+        prog="csebridge scan",
+        description=(
+            "Audit a repo for Google Custom Search JSON API call sites "
+            "(googleapis URLs, googleapiclient clients, gcse embeds, "
+            "GOOGLE_CSE_* env vars). The API stops serving Jan 1 2027; each "
+            "finding comes with a migration checklist pointing at csebridge."
+        ),
+    )
+    parser.add_argument("path", help="file or directory to scan")
+    parser.add_argument("--json", action="store_true", help="emit machine-readable JSON report")
+    return parser
+
+
+def scan_main(argv):
+    parser = build_scan_parser()
+    try:
+        args = parser.parse_args(argv)
+    except SystemExit as exc:
+        code = int(exc.code) if isinstance(exc.code, int) else EXIT_USAGE
+        sys.exit(code)
+
+    try:
+        result = scan_path(args.path)
+    except ValueError as exc:
+        print(f"csebridge scan: error: {exc}", file=sys.stderr)
+        sys.exit(EXIT_USAGE)
+
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        print(format_report(result))
+    sys.exit(EXIT_FINDINGS if result["findings"] else EXIT_OK)
 
 
 if __name__ == "__main__":
