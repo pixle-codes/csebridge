@@ -117,6 +117,21 @@ python -m csebridge "query" --site python.org         # site-restricted
 Exit codes: `0` ok · `1` backend/network failure (CSE-shaped error via
 `--json`) · `2` usage error.
 
+### Timeout & retry policy
+
+Every HTTP attempt honors two knobs (CLI flags win over env vars):
+
+```bash
+export CSEBRIDGE_TIMEOUT=15    # seconds per attempt (default 30)
+export CSEBRIDGE_RETRIES=2     # extra attempts on 429/5xx/network errors (default 0)
+python -m csebridge "query" --retries 2 --timeout 15   # same, per-invocation
+```
+
+Retries back off exponentially (0.5s doubling, capped at 8s). Client errors
+(400/401/403/404) are never retried. Library users can pass `timeout=` /
+`retries=` directly to `transport.request`, or set the env vars — they are read
+per call, so tests and threads stay safe.
+
 ### Audit a repo: `csebridge scan`
 
 Google stops serving the Custom Search JSON API on **Jan 1, 2027**. Point
@@ -195,6 +210,12 @@ TLS/DNS tricks that belong in 2010. One-line import changes age better.
 **Does it scrape Google?**
 No. It calls documented APIs of the configured backend (or your own SearXNG
 instance).
+
+## Docs
+
+- [ARCHITECTURE.md](ARCHITECTURE.md) — components, data flow, key decisions
+- [docs/migration-example.md](docs/migration-example.md) — worked googleapiclient → csebridge swap
+- [PLAN.md](PLAN.md) — problem statement, competitive landscape, milestones
 
 ## Development
 

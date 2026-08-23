@@ -512,4 +512,9 @@ def _wrap_transport(exc):
     }.get(code, "backendError")
     detail = (exc.body or "")[:300]
     message = f"{exc}: {detail}".rstrip(": ")
+    if code == 429:
+        message += (
+            " (rate limited: set CSEBRIDGE_RETRIES=2 or pass --retries 2 "
+            "to back off and retry automatically)"
+        )
     return CseError(message, code=code, reason=reason)

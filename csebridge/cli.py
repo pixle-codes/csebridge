@@ -1,6 +1,7 @@
 """CLI: python -m csebridge "query" [options]"""
 
 import argparse
+import os
 import json
 import sys
 
@@ -48,7 +49,19 @@ def build_parser():
         help="i=include site only, e=exclude site",
     )
     parser.add_argument("--json", action="store_true", help="print the full CSE JSON payload")
-    parser.add_argument("--version", action="version", version="%(prog)s 0.3.0")
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=None,
+        help="seconds per HTTP attempt (default 30; env CSEBRIDGE_TIMEOUT)",
+    )
+    parser.add_argument(
+        "--retries",
+        type=int,
+        default=None,
+        help="extra attempts on 429/5xx/network errors with backoff (default 0; env CSEBRIDGE_RETRIES)",
+    )
+    parser.add_argument("--version", action="version", version="%(prog)s 1.0.0")
     return parser
 
 
@@ -64,6 +77,10 @@ def main(argv=None):
         sys.exit(code)
 
     try:
+        if args.timeout is not None:
+            os.environ["CSEBRIDGE_TIMEOUT"] = str(args.timeout)
+        if args.retries is not None:
+            os.environ["CSEBRIDGE_RETRIES"] = str(args.retries)
         payload = search_from_args(args)
     except CseError as exc:
         if args.json:
