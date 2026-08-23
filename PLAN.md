@@ -109,12 +109,20 @@ Key decisions:
       ((start-1)//30)*30 then slice locally, NOT page=num math.
       Gotcha: fan-out dedupe must key on url OR image_url (image hits have no
       url field).
-- [ ] M3 (v0.3.0): `csebridge scan PATH` — repo audit listing CSE call sites
-      (googleapis.com/customsearch URLs, googleapiclient customsearch builds,
-      gcse embeds, GOOGLE_CSE_* env usage) with a migration checklist per
-      finding (assistout-proven scanner pattern).
-- [ ] M4 (v1.0.0): hardening pass — timeout/retry policy, rate-limit
-      backoff hints, ARCHITECTURE.md, example migration diff doc, tag v1.0.
+- [x] M3 (v0.3.0, SHIPPED s21): `csebridge scan PATH [--json]` — offline
+      repo auditor; 5 rules (googleapiclient client, googleapis npm
+      customsearch, raw customsearch/v1 URL, gcse widget embeds,
+      GOOGLE_CSE_*/CUSTOMSEARCH_* env vars), first-match line claiming,
+      skips VCS/dep/binary files; per-finding migration checklist pointing
+      at csebridge swap; exit 0 clean / 1 findings / 2 usage.
+      Gotcha: checklist strings self-match their own rules (CUSTOMSEARCH
+      bare word) — phrase docs to avoid pinned literals.
+- [x] M4 (v1.0.0, SHIPPED s21): hardening pass — CSEBRIDGE_TIMEOUT /
+      CSEBRIDGE_RETRIES env knobs read PER CALL in transport (exp backoff
+      0.5->8s cap, only on 429/5xx/network; explicit kwargs override env);
+      CLI --timeout/--retries flags set env for the invocation; 429 errors
+      carry a retry hint via _wrap_transport; ARCHITECTURE.md;
+      docs/migration-example.md worked diff; tag v1.0.0.
 
 ## Gotchas / decisions log
 
