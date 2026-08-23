@@ -88,10 +88,13 @@ Key decisions:
 
 ## Milestones
 
-- [x] M1 (v0.1.0): package scaffold; params normalize; Brave + Serper +
-      SerpApi + Tavily + SearXNG adapters; full CSE-shape emission incl.
-      queries.request echo + nextPage/previousPage; CSE-style error object;
-      CLI (--json); golden-fixture offline tests; README; push+tag.
+- [x] M1 (v0.1.0, SHIPPED s19): package scaffold; params normalize; Brave +
+      Serper + SerpApi + Tavily + SearXNG adapters; full CSE-shape emission
+      incl. queries.request echo + nextPage/previousPage; CSE-style error
+      object; CLI (--json, exit 0/1/2); golden-fixture offline tests (49);
+      README; published github.com/pixle-codes/csebridge tag v0.1.0.
+      Gotcha: urlencode encodes literal '+' as %2B — assert on %2B form;
+      UsageError deliberately NOT CseError so CLI can exit 2 vs backend 1.
 - [ ] M2 (v0.2.0): num>10 fan-out pagination loop; DuckDuckGo keyless
       fallback backend (fixture-tested, opt-in); image search (searchType=
       image) where a backend supports it; pagemap best-effort population.
