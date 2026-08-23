@@ -112,5 +112,46 @@ class TestQueriesBlock(unittest.TestCase):
         self.assertEqual(resp["queries"]["previousPage"][0]["startIndex"], 19)
 
 
+class TestPagemap(unittest.TestCase):
+    def hit(self, **extras):
+        base = {"title": "t", "url": "https://a.example/", "snippet": "s", "pos": 1}
+        base.update(extras)
+        return base
+
+    def test_no_pagemap_without_extras(self):
+        p = params.normalize("q")
+        resp = cse.build_response(p, None, [self.hit()], elapsed=0.0)
+        self.assertNotIn("pagemap", resp["items"][0])
+
+    def test_image_and_thumbnail_populate_cse_keys(self):
+        p = params.normalize("q")
+        hit = self.hit(
+            image_url="https://img.example/pic.jpg",
+            thumbnail_url="https://img.example/pic_s.jpg",
+            width=640,
+            height=480,
+            metatags={"og:title": "The Title"},
+        )
+        resp = cse.build_response(p, None, [hit], elapsed=0.0)
+        pm = resp["items"][0]["pagemap"]
+        self.assertEqual(pm["cse_image"], [{"src": "https://img.example/pic.jpg"}])
+        self.assertEqual(
+            pm["cse_thumbnail"],
+            [{"src": "https://img.example/pic_s.jpg", "width": "640", "height": "480"}],
+        )
+        self.assertEqual(pm["metatags"], [{"og:title": "The Title"}])
+
+    def test_image_item_omits_context_when_missing(self):
+        from csebridge.backends import _image_hit
+
+        h = _image_hit(title="x", image_url="https://img.example/a.png", width="10")
+        item = cse._image_item(h, "q")
+        # no context page known -> image url doubles as link and context
+        self.assertEqual(item["link"], "https://img.example/a.png")
+        self.assertEqual(item["image"]["contextLink"], "https://img.example/a.png")
+        self.assertNotIn("byteSize", item["image"])
+        self.assertEqual(item["mime"], "image/png")
+
+
 if __name__ == "__main__":
     unittest.main()

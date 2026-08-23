@@ -27,10 +27,11 @@ def build_parser():
         default=None,
         help=f"one of: {', '.join(sorted(BACKENDS))} (default: $CSEBRIDGE_BACKEND or brave)",
     )
-    parser.add_argument("--num", type=int, default=10, help="results per page, CSE max is 10")
+    parser.add_argument("--num", type=int, default=10, help="results wanted, up to 100; fetched via transparent fan-out")
     parser.add_argument("--start", type=int, default=1, help="1-based result index to start at")
     parser.add_argument("--lr", default=None, help="language, e.g. lang_en or en")
     parser.add_argument("--safe", default=None, choices=["active", "off"], help="safe search")
+    parser.add_argument("--search-type", dest="search_type", default=None, choices=["image"], help="image search (omit for web)")
     parser.add_argument("--site", dest="site_search", default=None, help="restrict to domain")
     parser.add_argument(
         "--site-filter",
@@ -40,7 +41,7 @@ def build_parser():
         help="i=include site only, e=exclude site",
     )
     parser.add_argument("--json", action="store_true", help="print the full CSE JSON payload")
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.2.0")
     return parser
 
 
@@ -92,6 +93,7 @@ def search_from_args(args):
         safe=args.safe,
         site_search=args.site_search,
         site_search_filter=args.site_search_filter,
+        search_type=args.search_type,
     )
 
 

@@ -8,13 +8,14 @@ in the **exact Custom Search JSON API schema** — `items[]`, `queries.nextPage`
 `searchInformation.totalResults`, even CSE-style error objects — while
 fetching results from the live backend of your choice:
 
-| Backend | Key env var | Notes |
-| --- | --- | --- |
-| Brave Search | `BRAVE_API_KEY` | independent index, free tier available |
-| Serper.dev | `SERPER_API_KEY` | fast Google SERP JSON |
-| SerpApi | `SERPAPI_API_KEY` | broad engine coverage |
-| Tavily | `TAVILY_API_KEY` | AI/RAG-oriented retrieval |
-| SearXNG | `SEARXNG_BASE_URL` | self-hosted, no key |
+| Backend | Key env var | Web | Images |
+| --- | --- | --- | --- |
+| Brave Search | `BRAVE_API_KEY` | yes | yes (`res/v1/images/search`) |
+| Serper.dev | `SERPER_API_KEY` | yes | yes (`google.serper.dev/images`) |
+| SerpApi | `SERPAPI_API_KEY` | yes | yes (`engine=google_images`) |
+| Tavily | `TAVILY_API_KEY` | yes | partial (image URLs + descriptions, no context page) |
+| SearXNG | `SEARXNG_BASE_URL` | yes (self-hosted) | yes (`categories=images`) |
+| DuckDuckGo | — none — | opt-in, keyless, unofficial | no |
 
 Swap backends by changing one environment variable. Your parsing code never
 changes.
@@ -77,6 +78,17 @@ res["queries"]["nextPage"][0]["startIndex"]  # pagination, exactly like CSE
 # page through like you always did
 page2 = search("site reliability engineering", start=11)
 
+# ask for more than 10: requests fan out into <=10-result pages and merge
+big = search("site reliability engineering", num=50)   # 5 backend calls, one response
+
+# image search (searchType=image parity)
+img = search("tabby cat", search_type="image", backend="serper")
+item = img["items"][0]
+item["link"]                    # the page hosting the image
+item["image"]["thumbnailLink"]  # thumbnail
+item["pagemap"]["cse_image"]    # [{src: ...}] like real CSE
+item["mime"]                    # guessed from extension, omitted if unknown
+
 # CSE params map onto every backend where meaningful
 search("docs", lr="lang_en", safe="active",
        site_search="python.org")           # include-only
@@ -97,6 +109,8 @@ except CseError as e:
 python -m csebridge "query" --backend serper          # human-readable
 python -m csebridge "query" --json                    # full CSE payload
 python -m csebridge "query" --start 11                # second page
+python -m csebridge "query" --num 50                  # fan-out fetch, merged
+python -m csebridge "query" --search-type image       # image results
 python -m csebridge "query" --site python.org         # site-restricted
 ```
 
@@ -113,11 +127,16 @@ Exit codes: `0` ok · `1` backend/network failure (CSE-shaped error via
 - `<b>` term highlighting inside `html*` fields, word-boundary accurate.
 - Error surface: HTTP-status-mapped CSE `error{code,message,errors[],status}`
   objects, raised as `CseError` with `.payload`.
-- Params: `q`, `num` (CSE caps at 10/call and so do we), `start`, `lr`,
-  `safe`, `siteSearch`/`siteSearchFilter`.
-
-Not yet (planned): >10-result fan-out, image search, pagemap population —
-see PLAN.md milestones.
+- Params: `q`, `num` (1–100; >10 is transparently fanned out into CSE-sized
+  pages and merged — Google only ever served the first 100 results, so
+  `start + num` must stay within that window), `start`, `lr`, `safe`,
+  `siteSearch`/`siteSearchFilter`, `searchType=image`.
+- Image search: items carry the CSE image shape — `image.contextLink`,
+  `image.thumbnailLink`, dimensions, `pagemap.cse_image`/`cse_thumbnail`,
+  `mime`/`fileFormat` when the extension is recognizable.
+- pagemap: populated best-effort whenever a backend supplies thumbnails or
+  metadata; absent otherwise (matching real CSE, where many responses have no
+  pagemap at all).
 
 ### Honest caveats
 
@@ -125,8 +144,15 @@ see PLAN.md milestones.
   conservative visible total instead of Google-style estimates. Handlers that
   merely display counts are unaffected; rank-tracker arithmetic on totals is
   the one behavior that cannot be faked honestly.
-- Tavily is relevance-ranked and unpaginated: `start>1` repeats its top hits
-  rather than true page 2. Prefer paginating backends for deep crawls.
+- Tavily is relevance-ranked and unpaginated: `start>1` repeats its top hits.
+  The fan-out deduplicates overlapping results, so `num>10` still yields what
+  Tavily can honestly provide. Prefer paginating backends for deep crawls.
+- SerpApi image paging uses continuation ids it doesn't expose via plain
+  `start`; image requests beyond the first page are best-effort there.
+- DuckDuckGo (`--backend ddg`) needs no key but hits an *unofficial* HTML
+  endpoint: expect rate limits/CAPTCHAs (surfaced as a CSE-style 429 error),
+  layout drift, and no `lr` support. Use it as a zero-signup fallback, not a
+  production workhorse.
 - SearXNG per-page sizes vary by instance; `pageno` mapping is approximate.
 - This is not affiliated with or endorsed by Google.
 
@@ -152,8 +178,8 @@ instance).
 python3 -m unittest discover -s tests -t .
 ```
 
-49 offline tests; network transport is injected, so the suite never touches
-the internet.
+81 offline tests; network transport is injected, so the suite never touches
+the internet (DDG included — its parser runs against a recorded HTML fixture).
 
 ## License
 

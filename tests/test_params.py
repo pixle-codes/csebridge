@@ -21,10 +21,20 @@ class TestNormalize(unittest.TestCase):
         with self.assertRaises(UsageError):
             params.normalize(123)
 
-    def test_num_clamped_to_cse_max(self):
-        # CSE never returned more than 10 per call; keep that contract.
-        self.assertEqual(params.normalize("q", num=50)["num"], 10)
+    def test_num_clamped_to_window(self):
+        # num>10 is allowed since v0.2 (api fans out); hard ceiling = 100
+        self.assertEqual(params.normalize("q", num=50)["num"], 50)
+        self.assertEqual(params.normalize("q", num=250)["num"], 100)
         self.assertEqual(params.normalize("q", num=0)["num"], 1)
+
+    def test_search_type_validation(self):
+        self.assertIsNone(params.normalize("q")["search_type"])
+        self.assertEqual(params.normalize("q", search_type="image")["search_type"], "image")
+        self.assertEqual(params.normalize("q", search_type="IMAGE")["search_type"], "image")
+        with self.assertRaises(UsageError):
+            params.normalize("q", search_type="video")
+        with self.assertRaises(UsageError):
+            params.normalize("q", search_type="news")
 
     def test_start_below_one_raises(self):
         with self.assertRaises(UsageError):

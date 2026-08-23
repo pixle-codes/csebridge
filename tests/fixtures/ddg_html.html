@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head><title>example query at DuckDuckGo</title></head>
+<body>
+<form action="/html/" method="POST"><input type="text" name="q" value="example query"></form>
+<div class="results">
+  <div class="result results_links results_links_deep web-result">
+    <div class="links_main links_deep result__body">
+      <h2 class="result__title">
+        <a rel="nofollow" class="result__a" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.example.com%2Ffirst&amp;rut=aa11">The First Result &mdash; Example</a>
+      </h2>
+      <a class="result__snippet" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.example.com%2Ffirst&amp;rut=aa11">A snippet about the <b>example query</b> with markup.</a>
+    </div>
+  </div>
+  <div class="result results_links results_links_deep web-result result--ad">
+    <div class="links_main links_deep result__body">
+      <h2 class="result__title">
+        <a rel="nofollow" class="result__a" href="https://duckduckgo.com/y.js?ad_provider=foo&amp;ad_domain=ads.example.net">Buy things now</a>
+      </h2>
+      <a class="result__snippet">An advertisement masquerading as a result.</a>
+    </div>
+  </div>
+  <div class="result results_links results_links_deep web-result">
+    <div class="links_main links_deep result__body">
+      <h2 class="result__title">
+        <a rel="nofollow" class="result__a" href="https://direct.example.org/page3">Directly Linked Result</a>
+      </h2>
+      <a class="result__snippet">This one ships a plain https link.</a>
+    </div>
+  </div>
+  <div class="result results_links results_links_deep web-result">
+    <div class="links_main links_deep result__body">
+      <h2 class="result__title">
+        <a rel="nofollow" class="result__a" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fthird.example.org%2Fdeep%2Fpath.html%3Fa%3D1%26b%3D2&amp;rut=cc33"></a>
+      </h2>
+      <a class="result__snippet">Title is empty here; must be skipped.</a>
+    </div>
+  </div>
+</div>
+<div class="nav-link"><form action="/html/" method="POST" name="nextform"><input type="submit" name="s" value="30"></form></div>
+</body>
+</html>

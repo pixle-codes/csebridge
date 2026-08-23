@@ -18,10 +18,16 @@ class FakeTransport:
 
 
 def load_fixture(name):
+    """Load tests/fixtures/<name>.json (parsed) or <name>.html (raw text)."""
     import pathlib
 
-    path = pathlib.Path(__file__).parent / "fixtures" / f"{name}.json"
-    return json.loads(path.read_text())
+    base = pathlib.Path(__file__).parent / "fixtures" / name
+    if base.suffix:
+        return base.read_text()
+    json_path = base.with_suffix(".json")
+    if json_path.exists():
+        return json.loads(json_path.read_text())
+    return base.with_suffix(".html").read_text()
 
 
 def ok(body):

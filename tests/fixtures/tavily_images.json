@@ -1,0 +1,11 @@
+{
+  "query": "tropical fish",
+  "results": [],
+  "images": [
+    {
+      "url": "https://cdn.fish.example/clownfish.webp",
+      "description": "A clownfish in anemone"
+    },
+    "https://cdn.fish.example/tang.png"
+  ]
+}

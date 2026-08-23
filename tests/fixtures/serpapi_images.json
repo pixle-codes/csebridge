@@ -1,0 +1,15 @@
+{
+  "search_metadata": { "google_images_engine": "engine=google_images" },
+  "images_results": [
+    {
+      "position": 1,
+      "title": "A bluebird on a branch",
+      "original": "https://cdn.birds.example/bluebird.jpg",
+      "thumbnail": "https://cdn.birds.example/bluebird_t.jpg",
+      "source": "birds.example",
+      "source_link": "https://birds.example/photos/1",
+      "original_width": 640,
+      "original_height": 480
+    }
+  ]
+}

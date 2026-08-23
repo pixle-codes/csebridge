@@ -95,9 +95,20 @@ Key decisions:
       README; published github.com/pixle-codes/csebridge tag v0.1.0.
       Gotcha: urlencode encodes literal '+' as %2B — assert on %2B form;
       UsageError deliberately NOT CseError so CLI can exit 2 vs backend 1.
-- [ ] M2 (v0.2.0): num>10 fan-out pagination loop; DuckDuckGo keyless
-      fallback backend (fixture-tested, opt-in); image search (searchType=
-      image) where a backend supports it; pagemap best-effort population.
+- [x] M2 (v0.2.0, SHIPPED s20): num>10 fan-out (api._collect: <=10-result
+      pages, dedupe-by-url, early stop on short/dup pages, start+num<=100
+      window enforced as CSE 400); searchType=image over brave/serper/
+      serpapi/tavily/searxng (Backend.fetch_images + supports_images; image
+      items emit CSE shape: image.contextLink/thumbnailLink/dims +
+      pagemap.cse_image/cse_thumbnail + mime/fileFormat); pagemap best-effort
+      from hit extras (image_url/thumbnail_url/metatags) — absent when the
+      backend gives nothing, like real CSE; keyless `ddg` backend opt-in only
+      (html.duckduckgo.com HTMLParser scraper: uddg unwrap, y.js ad skip,
+      captcha->429, native ~30/page windowing w/ local slice; fixture-tested).
+      Gotcha: DDG ignores num and serves ~30/page — offset must be
+      ((start-1)//30)*30 then slice locally, NOT page=num math.
+      Gotcha: fan-out dedupe must key on url OR image_url (image hits have no
+      url field).
 - [ ] M3 (v0.3.0): `csebridge scan PATH` — repo audit listing CSE call sites
       (googleapis.com/customsearch URLs, googleapiclient customsearch builds,
       gcse embeds, GOOGLE_CSE_* env usage) with a migration checklist per

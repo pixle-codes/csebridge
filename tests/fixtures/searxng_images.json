@@ -1,0 +1,14 @@
+{
+  "query": "mountain sunset",
+  "results": [
+    {
+      "title": "Alpine sunset over the ridge",
+      "url": "https://photos.example/albums/alpine",
+      "img_src": "https://cdn.photos.example/alpine.jpg",
+      "thumbnail_src": "https://cdn.photos.example/alpine_t.jpg",
+      "engine": "unsplash"
+    }
+  ],
+  "number_of_results": 0,
+  "unresponsive_engines": []
+}

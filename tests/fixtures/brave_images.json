@@ -1,0 +1,21 @@
+{
+  "type": "images",
+  "results": [
+    {
+      "type": "image_result",
+      "title": "A tabby cat sitting",
+      "url": "https://cats.example/gallery/tabby",
+      "image": { "url": "https://cdn.cats.example/tabby.jpg" },
+      "thumbnail": { "src": "https://cdn.cats.example/tabby_thumb.jpg" },
+      "properties": { "width": "1200", "height": "800" }
+    },
+    {
+      "type": "image_result",
+      "title": "Kitten in a basket",
+      "url": "https://cats.example/gallery/kitten",
+      "image": { "url": "https://cdn.cats.example/kitten.png" },
+      "thumbnail": { "url": "https://cdn.cats.example/kitten_thumb.png" },
+      "properties": {}
+    }
+  ]
+}

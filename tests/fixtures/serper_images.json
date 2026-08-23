@@ -1,0 +1,16 @@
+{
+  "searchParameters": { "q": "cute dog", "type": "images", "engine": "google_images" },
+  "images": [
+    {
+      "title": "A golden retriever puppy",
+      "imageUrl": "https://cdn.dogs.example/puppy.jpg",
+      "imageWidth": 1024,
+      "imageHeight": 768,
+      "thumbnailUrl": "https://cdn.dogs.example/puppy_s.jpg",
+      "link": "https://dogs.example/posts/puppy",
+      "source": "dogs.example",
+      "position": 1
+    }
+  ],
+  "credits": 1
+}
