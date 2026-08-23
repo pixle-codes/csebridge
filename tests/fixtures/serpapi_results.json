@@ -1,0 +1,13 @@
+{
+  "search_metadata": {"id": "abc123", "status": "Success"},
+  "search_parameters": {"q": "example domains", "num": 10, "start": 1},
+  "search_information": {
+    "total_results": 95300000,
+    "time_taken_displayed": 0.42,
+    "organic_results_state": "Results for exact spelling"
+  },
+  "organic_results": [
+    {"position": 1, "title": "Example Domain", "link": "https://example.com/", "snippet": "This domain is for use in illustrative examples."},
+    {"position": 2, "title": "Reserved Domains - IANA", "link": "https://www.iana.org/domains/reserved", "snippet": "Certain domains are set aside."}
+  ]
+}

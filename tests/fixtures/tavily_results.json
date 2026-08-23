@@ -1,0 +1,8 @@
+{
+  "query": "example domains",
+  "results": [
+    {"title": "Example Domain", "url": "https://example.com/", "content": "This domain is for use in illustrative examples.", "score": 0.98},
+    {"title": "Reserved Domains - IANA", "url": "https://www.iana.org/domains/reserved", "content": "Certain domains are set aside.", "score": 0.91}
+  ],
+  "response_time": 1.2
+}

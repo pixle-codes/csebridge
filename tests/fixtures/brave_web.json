@@ -1,0 +1,22 @@
+{
+  "web": {
+    "results": [
+      {
+        "title": "Example Domain",
+        "url": "https://example.com/",
+        "description": "This domain is for use in illustrative examples in documents."
+      },
+      {
+        "title": "IANA-managed Reserved Domains",
+        "url": "https://www.iana.org/domains/reserved",
+        "description": "Certain domains are set aside for documentation purposes."
+      },
+      {
+        "title": "RFC 2606: Reserved Top Level DNS Names",
+        "url": "https://www.rfc-editor.org/rfc/rfc2606.html",
+        "description": "This document defines the reserved top-level DNS names."
+      }
+    ]
+  },
+  "query": {"original": "example domains", "display_str": "example domains"}
+}

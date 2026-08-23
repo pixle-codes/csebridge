@@ -1,0 +1,9 @@
+{
+  "searchParameters": {"q": "example domains", "page": 1, "num": 10},
+  "organic": [
+    {"position": 1, "title": "Example Domain", "link": "https://example.com/", "snippet": "This domain is for use in illustrative examples."},
+    {"position": 2, "title": "Reserved Domains - IANA", "link": "https://www.iana.org/domains/reserved", "snippet": "Certain domains are set aside."},
+    {"position": 3, "title": "RFC 2606", "link": "https://www.rfc-editor.org/rfc/rfc2606.html", "snippet": "Reserved top level DNS names."}
+  ],
+  "credits": 1
+}
